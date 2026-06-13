@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ritual Chocolate — Monday.com Template</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --mon-bg:#1a1d2b;--mon-sidebar:#0f1120;--mon-surface:#252836;--mon-surface2:#2e3148;
+  --mon-border:rgba(255,255,255,.08);--mon-border2:rgba(255,255,255,.12);
+  --mon-text:#ffffff;--mon-text2:rgba(255,255,255,.65);--mon-text3:rgba(255,255,255,.35);
+  --mon-blue:#0073ea;--mon-purple:#a25ddc;--mon-green:#00c875;
+  --mon-orange:#ff7575;--mon-yellow:#ffcb00;--mon-teal:#009aac;
+  --cacao:#c9833a;--gold:#e8a84a;
+  /* status colors */
+  --s-done:#00c875;--s-active:#0073ea;--s-blocked:#ff7575;--s-pending:#ffcb00;--s-review:#a25ddc;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Figtree',sans-serif;background:var(--mon-bg);color:var(--mon-text);min-height:100vh;overflow-x:hidden;}
+
+/* ── SHELL ── */
+.shell{display:flex;height:100vh;overflow:hidden;}
+
+/* ── LEFT SIDEBAR ── */
+.sidebar{width:260px;flex-shrink:0;background:var(--mon-sidebar);display:flex;flex-direction:column;border-right:1px solid var(--mon-border);}
+.sb-top{padding:16px 14px 12px;border-bottom:1px solid var(--mon-border);}
+.sb-workspace{display:flex;align-items:center;gap:9px;margin-bottom:14px;}
+.ws-logo{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,#c9833a,#e8a84a);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;}
+.ws-name{font-size:13px;font-weight:600;color:var(--mon-text);}
+.ws-plan{font-size:10px;color:var(--mon-text3);font-family:'DM Mono',monospace;}
+.sb-search{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--mon-border2);border-radius:6px;padding:6px 10px;color:var(--mon-text2);font-size:12px;font-family:'Figtree',sans-serif;outline:none;}
+.sb-search::placeholder{color:var(--mon-text3);}
+.sb-nav{padding:8px 0;flex:1;overflow-y:auto;}
+.sb-nav::-webkit-scrollbar{width:3px;}
+.sb-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px;}
+.sb-section{padding:6px 14px 3px;font-size:10px;font-weight:600;color:var(--mon-text3);text-transform:uppercase;letter-spacing:1px;font-family:'DM Mono',monospace;}
+.sb-item{display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:0;transition:background .15s;position:relative;}
+.sb-item:hover{background:rgba(255,255,255,.05);}
+.sb-item.active{background:rgba(0,115,234,.15);}
+.sb-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--mon-blue);border-radius:0 2px 2px 0;}
+.sb-item-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0;}
+.sb-item-name{font-size:13px;color:var(--mon-text2);}
+.sb-item.active .sb-item-name{color:var(--mon-text);font-weight:500;}
+.sb-item-count{font-size:10px;color:var(--mon-text3);margin-left:auto;font-family:'DM Mono',monospace;background:rgba(255,255,255,.06);padding:1px 6px;border-radius:8px;}
+.sb-divider{height:1px;background:var(--mon-border);margin:8px 14px;}
+.sb-footer{padding:12px 14px;border-top:1px solid var(--mon-border);}
+.sb-invite{display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:6px;background:rgba(0,115,234,.15);cursor:pointer;border:1px solid rgba(0,115,234,.25);}
+.sb-invite-text{font-size:12px;color:var(--mon-blue);}
+
+/* ── MAIN ── */
+.main{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+
+/* TOP BAR */
+.topbar{background:var(--mon-sidebar);border-bottom:1px solid var(--mon-border);padding:0 20px;display:flex;align-items:center;height:50px;flex-shrink:0;gap:16px;}
+.tb-breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;}
+.tb-bc-item{color:var(--mon-text3);cursor:pointer;}
+.tb-bc-item:hover{color:var(--mon-text2);}
+.tb-bc-sep{color:var(--mon-text3);font-size:11px;}
+.tb-bc-current{color:var(--mon-text);font-weight:600;}
+.tb-right{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.tb-btn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;font-family:'Figtree',sans-serif;cursor:pointer;border:none;transition:all .2s;}
+.tb-btn-primary{background:var(--mon-blue);color:white;}
+.tb-btn-primary:hover{background:#0063cc;}
+.tb-btn-ghost{background:rgba(255,255,255,.06);color:var(--mon-text2);border:1px solid var(--mon-border2);}
+.tb-btn-ghost:hover{background:rgba(255,255,255,.1);}
+.tb-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#c9833a,#e8a84a);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;}
+
+/* BOARD TABS */
+.board-tabs{background:var(--mon-surface);border-bottom:1px solid var(--mon-border);padding:0 20px;display:flex;align-items:center;gap:0;height:44px;flex-shrink:0;}
+.board-tab{padding:0 16px;height:100%;display:flex;align-items:center;font-size:13px;font-weight:500;color:var(--mon-text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;}
+.board-tab:hover{color:var(--mon-text2);}
+.board-tab.active{color:var(--mon-text);border-bottom-color:var(--mon-blue);}
+.board-tab .tab-icon{margin-right:6px;font-size:12px;}
+.tab-separator{width:1px;height:20px;background:var(--mon-border);margin:0 8px;}
+
+/* BOARD HEADER */
+.board-header{padding:16px 20px 12px;background:var(--mon-surface);border-bottom:1px solid var(--mon-border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.bh-left{display:flex;align-items:center;gap:12px;}
+.bh-title{font-size:20px;font-weight:700;color:var(--mon-text);}
+.bh-desc{font-size:12px;color:var(--mon-text3);margin-top:2px;}
+.bh-right{display:flex;align-items:center;gap:8px;}
+.view-btn{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--mon-border2);background:transparent;color:var(--mon-text3);transition:all .2s;}
+.view-btn:hover,.view-btn.active{background:rgba(255,255,255,.06);color:var(--mon-text2);}
+.view-btn.active{border-color:var(--mon-blue);color:var(--mon-blue);}
+
+/* CONTENT AREA */
+.content{flex:1;overflow-y:auto;overflow-x:auto;background:var(--mon-bg);}
+.content::-webkit-scrollbar{width:6px;height:6px;}
+.content::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px;}
+
+/* VIEW PANELS */
+.view-panel{display:none;padding:0;}
+.view-panel.active{display:block;}
+
+/* ── BOARD VIEW ── */
+.board-view{min-width:900px;}
+.group-block{margin-bottom:0;}
+.group-header{display:flex;align-items:center;gap:0;padding:10px 20px 8px;background:var(--mon-bg);border-bottom:1px solid var(--mon-border);position:sticky;top:0;z-index:5;}
+.group-color{width:5px;height:24px;border-radius:3px;margin-right:10px;flex-shrink:0;}
+.group-name{font-size:14px;font-weight:700;color:var(--mon-text);margin-right:8px;}
+.group-count{font-size:11px;color:var(--mon-text3);font-family:'DM Mono',monospace;background:rgba(255,255,255,.06);padding:2px 7px;border-radius:9px;}
+.group-add{margin-left:auto;font-size:11px;color:var(--mon-text3);cursor:pointer;padding:4px 10px;border-radius:5px;transition:background .15s;}
+.group-add:hover{background:rgba(255,255,255,.06);color:var(--mon-text2);}
+
+/* COLUMN HEADERS */
+.col-headers{display:flex;align-items:center;border-bottom:1px solid var(--mon-border);background:var(--mon-surface);padding:0 20px;height:36px;position:sticky;top:50px;z-index:4;}
+.col-check{width:36px;flex-shrink:0;}
+.col-name{flex:2;min-width:200px;font-size:11px;font-weight:600;color:var(--mon-text3);text-transform:uppercase;letter-spacing:.7px;}
+.col-field{flex:1;min-width:110px;font-size:11px;font-weight:600;color:var(--mon-text3);text-transform:uppercase;letter-spacing:.7px;text-align:center;}
+.col-field.wide{flex:1.5;}
+.col-add{width:40px;flex-shrink:0;text-align:center;font-size:16px;color:var(--mon-text3);cursor:pointer;}
+
+/* ROW */
+.item-row{display:flex;align-items:center;border-bottom:1px solid var(--mon-border);padding:0 20px;min-height:38px;transition:background .15s;cursor:pointer;}
+.item-row:hover{background:rgba(255,255,255,.03);}
+.item-check{width:36px;flex-shrink:0;}
+.check-box{width:16px;height:16px;border-radius:4px;border:1.5px solid rgba(255,255,255,.2);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.check-box.done{background:var(--s-done);border-color:var(--s-done);}
+.check-box.done::after{content:'✓';font-size:10px;color:white;font-weight:700;}
+.item-name{flex:2;min-width:200px;font-size:13px;color:var(--mon-text);padding:2px 0;}
+.item-name .sub{font-size:10px;color:var(--mon-text3);display:block;margin-top:1px;font-family:'DM Mono',monospace;}
+.item-field{flex:1;min-width:110px;display:flex;align-items:center;justify-content:center;padding:2px 4px;}
+.item-field.wide{flex:1.5;}
+.status-cell{padding:4px 10px;border-radius:4px;font-size:11px;font-weight:600;text-align:center;cursor:pointer;transition:opacity .2s;white-space:nowrap;}
+.status-cell:hover{opacity:.85;}
+.s-done-cell{background:var(--s-done);color:#003320;}
+.s-active-cell{background:var(--s-active);color:white;}
+.s-blocked-cell{background:var(--s-blocked);color:white;}
+.s-pending-cell{background:var(--s-pending);color:#332200;}
+.s-review-cell{background:var(--s-review);color:white;}
+.s-ns-cell{background:rgba(255,255,255,.08);color:var(--mon-text3);}
+.s-ok-cell{background:var(--s-done);color:#003320;}
+.s-low-cell{background:var(--s-pending);color:#332200;}
+.s-critical-cell{background:var(--s-blocked);color:white;}
+.person-cell{display:flex;align-items:center;gap:5px;justify-content:center;}
+.person-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;flex-shrink:0;}
+.person-name{font-size:11px;color:var(--mon-text2);}
+.date-cell{font-size:11px;color:var(--mon-text2);font-family:'DM Mono',monospace;text-align:center;}
+.date-cell.overdue{color:#ff7575;}
+.date-cell.soon{color:#ffcb00;}
+.num-cell{font-size:12px;font-family:'DM Mono',monospace;color:var(--mon-text2);text-align:center;}
+.num-cell.good{color:var(--s-done);}
+.num-cell.warn{color:var(--s-pending);}
+.num-cell.bad{color:var(--s-blocked);}
+.tag-cell{display:flex;align-items:center;justify-content:center;}
+.tag{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500;}
+.add-item-row{display:flex;align-items:center;padding:8px 20px;gap:8px;border-bottom:1px solid var(--mon-border);cursor:pointer;transition:background .15s;}
+.add-item-row:hover{background:rgba(255,255,255,.03);}
+.add-item-icon{width:16px;height:16px;border-radius:3px;border:1.5px dashed rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:12px;color:rgba(255,255,255,.2);}
+.add-item-text{font-size:12px;color:var(--mon-text3);}
+
+/* ── AUTOMATION PANEL ── */
+.automation-view{padding:24px;}
+.auto-intro{background:var(--mon-surface);border:1px solid var(--mon-border);border-radius:10px;padding:20px;margin-bottom:20px;}
+.auto-intro-title{font-size:16px;font-weight:700;color:var(--mon-text);margin-bottom:6px;}
+.auto-intro-sub{font-size:13px;color:var(--mon-text3);line-height:1.6;}
+.auto-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+.auto-card{background:var(--mon-surface);border:1px solid var(--mon-border);border-radius:10px;padding:16px 18px;display:flex;align-items:flex-start;gap:14px;transition:border-color .2s;cursor:pointer;}
+.auto-card:hover{border-color:var(--mon-border2);}
+.auto-card.enabled{border-color:rgba(0,200,117,.25);background:rgba(0,200,117,.04);}
+.auto-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.auto-body{flex:1;}
+.auto-title{font-size:13px;font-weight:600;color:var(--mon-text);margin-bottom:4px;}
+.auto-desc{font-size:12px;color:var(--mon-text3);line-height:1.5;}
+.auto-trigger{font-size:11px;font-family:'DM Mono',monospace;margin-top:8px;padding:6px 10px;background:rgba(255,255,255,.04);border-radius:5px;color:var(--mon-text3);}
+.auto-trigger strong{color:var(--mon-blue);}
+.auto-status{display:flex;align-items:center;gap:5px;margin-top:8px;}
+.auto-dot{width:8px;height:8px;border-radius:50%;}
+.auto-dot.on{background:var(--s-done);}
+.auto-dot.off{background:rgba(255,255,255,.2);}
+.auto-label{font-size:11px;font-family:'DM Mono',monospace;color:var(--mon-text3);}
+
+/* ── SETUP GUIDE ── */
+.setup-view{padding:24px;}
+.setup-header{margin-bottom:20px;}
+.setup-title{font-size:20px;font-weight:700;color:var(--mon-text);margin-bottom:5px;}
+.setup-sub{font-size:13px;color:var(--mon-text3);line-height:1.6;}
+.phase-block{margin-bottom:20px;}
+.phase-label{font-size:10px;font-weight:700;color:var(--mon-text3);text-transform:uppercase;letter-spacing:1.5px;font-family:'DM Mono',monospace;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.phase-line{flex:1;height:1px;background:var(--mon-border);}
+.setup-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.setup-step{background:var(--mon-surface);border:1px solid var(--mon-border);border-radius:10px;padding:14px 16px;}
+.step-num{font-size:10px;font-family:'DM Mono',monospace;color:var(--mon-text3);margin-bottom:6px;}
+.step-title{font-size:13px;font-weight:600;color:var(--mon-text);margin-bottom:5px;}
+.step-items{display:flex;flex-direction:column;gap:3px;}
+.step-item{display:flex;align-items:flex-start;gap:6px;font-size:11px;color:var(--mon-text3);line-height:1.4;}
+.step-dot{width:4px;height:4px;border-radius:50%;background:var(--mon-blue);flex-shrink:0;margin-top:5px;}
+.step-item.done-item .step-dot{background:var(--s-done);}
+.step-item.done-item{color:rgba(255,255,255,.5);}
+.step-time{font-size:10px;font-family:'DM Mono',monospace;color:var(--mon-blue);margin-top:6px;}
+.progress-bar{height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin-top:10px;}
+.progress-fill{height:100%;border-radius:2px;background:var(--mon-blue);}
+
+/* ── SUMMARY CARD ── */
+.summary-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;background:var(--mon-surface);border-bottom:1px solid var(--mon-border);flex-shrink:0;}
+.sum-item{padding:10px 16px;border-right:1px solid var(--mon-border);text-align:center;}
+.sum-item:last-child{border-right:none;}
+.sum-label{font-size:10px;color:var(--mon-text3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px;}
+.sum-val{font-size:16px;font-weight:700;color:var(--mon-text);}
+.sum-sub{font-size:10px;font-family:'DM Mono',monospace;margin-top:1px;}
+
+/* ACTIVE BOARD INDICATOR */
+.board-label{padding:10px 20px 0;font-size:11px;color:var(--mon-text3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sb-top">
+    <div class="sb-workspace">
+      <div class="ws-logo">R</div>
+      <div>
+        <div class="ws-name">Ritual Chocolate</div>
+        <div class="ws-plan">Monday.com · Pro Plan</div>
+      </div>
+    </div>
+    <input class="sb-search" placeholder="🔍  Search…">
+  </div>
+
+  <div class="sb-nav">
+    <div class="sb-section">Favorites</div>
+    <div class="sb-item" onclick="showBoard('overview')">
+      <div class="sb-item-icon">🏠</div>
+      <div class="sb-item-name">My Week</div>
+    </div>
+
+    <div class="sb-section" style="margin-top:6px">Ritual OS Boards</div>
+    <div class="sb-item active" id="nav-production" onclick="showBoard('production')">
+      <div class="sb-item-icon">⚙️</div>
+      <div class="sb-item-name">Production Tracker</div>
+      <div class="sb-item-count">48</div>
+    </div>
+    <div class="sb-item" id="nav-inventory" onclick="showBoard('inventory')">
+      <div class="sb-item-icon">📦</div>
+      <div class="sb-item-name">Inventory & Stock</div>
+      <div class="sb-item-count">24</div>
+    </div>
+    <div class="sb-item" id="nav-sales" onclick="showBoard('sales')">
+      <div class="sb-item-icon">🤝</div>
+      <div class="sb-item-name">Sales & Accounts</div>
+      <div class="sb-item-count">9</div>
+    </div>
+    <div class="sb-item" id="nav-equipment" onclick="showBoard('equipment')">
+      <div class="sb-item-icon">🔧</div>
+      <div class="sb-item-name">Equipment & Maintenance</div>
+      <div class="sb-item-count">8</div>
+    </div>
+    <div class="sb-item" id="nav-team" onclick="showBoard('team')">
+      <div class="sb-item-icon">👥</div>
+      <div class="sb-item-name">Team & Roles</div>
+      <div class="sb-item-count">22</div>
+    </div>
+    <div class="sb-item" id="nav-kpi" onclick="showBoard('kpi')">
+      <div class="sb-item-icon">📊</div>
+      <div class="sb-item-name">Weekly KPI Scorecard</div>
+      <div class="sb-item-count">12</div>
+    </div>
+
+    <div class="sb-divider"></div>
+    <div class="sb-section">Workspace</div>
+    <div class="sb-item" id="nav-automations" onclick="showBoard('automations')">
+      <div class="sb-item-icon">⚡</div>
+      <div class="sb-item-name">Automations</div>
+      <div class="sb-item-count">14</div>
+    </div>
+    <div class="sb-item" id="nav-setup" onclick="showBoard('setup')">
+      <div class="sb-item-icon">🚀</div>
+      <div class="sb-item-name">Setup Guide</div>
+    </div>
+  </div>
+
+  <div class="sb-footer">
+    <div class="sb-invite">
+      <span style="font-size:14px">➕</span>
+      <div class="sb-invite-text">Invite team members</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-breadcrumb">
+      <span class="tb-bc-item">Ritual Chocolate</span>
+      <span class="tb-bc-sep">›</span>
+      <span class="tb-bc-item">Ritual OS Boards</span>
+      <span class="tb-bc-sep">›</span>
+      <span class="tb-bc-current" id="topBreadcrumb">Production Tracker</span>
+    </div>
+    <div class="tb-right">
+      <button class="tb-btn tb-btn-ghost">Filter</button>
+      <button class="tb-btn tb-btn-ghost">Sort</button>
+      <button class="tb-btn tb-btn-primary" id="topAddBtn">+ Add Item</button>
+      <div class="tb-avatar">DK</div>
+    </div>
+  </div>
+
+  <!-- BOARD TABS -->
+  <div class="board-tabs" id="boardTabs">
+    <div class="board-tab active tab-icon">📋 Main Table</div>
+    <div class="board-tab">🗓 Calendar</div>
+    <div class="board-tab">📊 Dashboard</div>
+    <div class="board-tab">⚡ Automations</div>
+    <div class="tab-separator"></div>
+    <div class="board-tab" style="color:var(--mon-blue);font-size:12px">+ Add View</div>
+  </div>
+
+  <!-- SUMMARY STRIP -->
+  <div class="summary-strip" id="summaryStrip"></div>
+
+  <!-- CONTENT -->
+  <div class="content" id="mainContent"></div>
+</div>
+</div>
+
+<script>
+// ══════════════════════
+// BOARD DATA
+// ══════════════════════
+const BOARDS={
+
+production:{
+  title:"Production Tracker",
+  desc:"Track all 4 batches through 12 production stages",
+  addBtn:"+ New Batch",
+  summary:[
+    {label:"Total stages",val:"48",sub:"across 4 batches",color:""},
+    {label:"In progress",val:"3",sub:"stages active",color:"var(--s-active)"},
+    {label:"Complete",val:"22",sub:"stages done",color:"var(--s-done)"},
+    {label:"Blocked",val:"0",sub:"no blockers",color:"var(--s-done)"},
+    {label:"Avg yield",val:"96.2%",sub:"target 97%",color:"var(--s-pending)"},
+  ],
+  columns:["Stage","Owner","Status","Start","Est. Done","Yield %","Notes"],
+  groups:[
+    {name:"Batch A — Madagascar 75%",color:"#c9833a",items:[
+      {name:"Pre-batch setup & QC intake",owner:{init:"MR",color:"#8b4513"},status:"done",start:"Apr 10",end:"Apr 10",yield:"—",note:"All ingredients verified"},
+      {name:"Roasting",owner:{init:"MR",color:"#8b4513"},status:"done",start:"Apr 10",end:"Apr 10",yield:"—",note:"First crack 16:30 min"},
+      {name:"Cracking & Winnowing",owner:{init:"MR",color:"#8b4513"},status:"done",start:"Apr 11",end:"Apr 11",yield:"81%",note:""},
+      {name:"Grinding (Melangeur)",owner:{init:"MR",color:"#8b4513"},status:"done",start:"Apr 11",end:"Apr 12",yield:"—",note:"20 microns achieved"},
+      {name:"Conching",owner:{init:"MR",color:"#8b4513"},status:"done",start:"Apr 12",end:"Apr 14",yield:"—",note:"48 hrs. Excellent profile"},
+      {name:"Tempering",owner:{init:"MR",color:"#8b4513"},status:"active",start:"Apr 15",end:"Apr 15",yield:"—",note:"Bloom test pending"},
+      {name:"Molding & Setting",owner:{init:"PM",color:"#a0522d"},status:"ns",start:"Apr 15",end:"Apr 16",yield:"—",note:""},
+      {name:"Demolding",owner:{init:"PM",color:"#a0522d"},status:"ns",start:"Apr 16",end:"Apr 16",yield:"—",note:""},
+      {name:"QC Hold",owner:{init:"SL",color:"#3a8bd4"},status:"ns",start:"Apr 16",end:"Apr 17",yield:"—",note:""},
+      {name:"Wrapping & Packaging",owner:{init:"JT",color:"#5a9a3a"},status:"ns",start:"Apr 17",end:"Apr 17",yield:"—",note:""},
+      {name:"Labeling",owner:{init:"JT",color:"#5a9a3a"},status:"ns",start:"Apr 17",end:"Apr 17",yield:"—",note:""},
+      {name:"Palletizing & Storage",owner:{init:"AW",color:"#7a6a5a"},status:"ns",start:"Apr 17",end:"Apr 17",yield:"—",note:""},
+    ]},
+    {name:"Batch B — Peru 75%",color:"#5a9a3a",items:[
+      {name:"Pre-batch setup & QC intake",owner:{init:"MR",color:"#8b4513"},status:"done",start:"Apr 13",end:"Apr 13",yield:"—",note:""},
+      {name:"Roasting",owner:{init:"MR",color:"#8b4513"},status:"done",start:"Apr 13",end:"Apr 13",yield:"—",note:""},
+      {name:"Cracking & Winnowing",owner:{init:"MR",color:"#8b4513"},status:"active",start:"Apr 14",end:"Apr 14",yield:"—",note:"In progress"},
+      {name:"Grinding (Melangeur)",owner:{init:"MR",color:"#8b4513"},status:"ns",start:"Apr 14",end:"Apr 15",yield:"—",note:""},
+      {name:"Conching",owner:{init:"MR",color:"#8b4513"},status:"ns",start:"Apr 15",end:"Apr 17",yield:"—",note:""},
+      {name:"Tempering",owner:{init:"PM",color:"#a0522d"},status:"ns",start:"Apr 18",end:"Apr 18",yield:"—",note:""},
+    ]},
+    {name:"Batch C — Ecuador 75%",color:"#3a8bd4",items:[
+      {name:"Pre-batch setup & QC intake",owner:{init:"PM",color:"#a0522d"},status:"active",start:"Apr 15",end:"Apr 15",yield:"—",note:"Weighing in progress"},
+      {name:"Roasting",owner:{init:"PM",color:"#a0522d"},status:"ns",start:"Apr 15",end:"Apr 15",yield:"—",note:""},
+    ]},
+    {name:"Batch D — Mid Mountain Blend",color:"#a25ddc",items:[
+      {name:"Pre-batch setup & QC intake",owner:{init:"MR",color:"#8b4513"},status:"ns",start:"Apr 18",end:"Apr 18",yield:"—",note:"Scheduled"},
+    ]},
+  ]
+},
+
+inventory:{
+  title:"Inventory & Stock",
+  desc:"All 24 SKUs across 5 locations — café, warehouse, tour room, samples, online",
+  addBtn:"+ Add SKU",
+  summary:[
+    {label:"Total SKUs",val:"24",sub:"products tracked"},
+    {label:"In stock",val:"21",sub:"fully stocked",color:"var(--s-done)"},
+    {label:"Low stock",val:"2",sub:"need reorder",color:"var(--s-pending)"},
+    {label:"Critical",val:"1",sub:"immediate action",color:"var(--s-blocked)"},
+    {label:"Total value",val:"$94k",sub:"retail inventory"},
+  ],
+  columns:["Product / SKU","Status","Café","Warehouse","Tour","Samples","Min Stock"],
+  groups:[
+    {name:"Single Origin Bars",color:"#c9833a",items:[
+      {name:"Madagascar 75%",sku:"SO-MAD-75",status:"ok",cafe:24,wh:240,tour:18,samples:36,min:20},
+      {name:"Peru 75%",sku:"SO-PER-75",status:"ok",cafe:18,wh:192,tour:12,samples:24,min:20},
+      {name:"Ecuador 75%",sku:"SO-ECU-75",status:"ok",cafe:12,wh:144,tour:12,samples:18,min:20},
+      {name:"Belize 75%",sku:"SO-BLZ-75",status:"low",cafe:8,wh:96,tour:6,samples:12,min:20},
+      {name:"Mid Mountain Blend 70%",sku:"SO-MM-70",status:"ok",cafe:30,wh:288,tour:24,samples:48,min:30},
+    ]},
+    {name:"Inclusion Bars",color:"#5a9a3a",items:[
+      {name:"Fleur de Sel",sku:"INC-FDS",status:"ok",cafe:36,wh:360,tour:24,samples:60,min:30},
+      {name:"S'mores Bar",sku:"INC-SMR",status:"ok",cafe:20,wh:204,tour:18,samples:36,min:20},
+      {name:"Honeycomb Toffee",sku:"INC-HCT",status:"ok",cafe:22,wh:216,tour:16,samples:30,min:20},
+      {name:"Bourbon Barrel Aged",sku:"BAR-BBA",status:"low",cafe:8,wh:72,tour:6,samples:6,min:12},
+    ]},
+    {name:"Raw Materials",color:"#a25ddc",items:[
+      {name:"Cacao beans",sku:"RM-CAC",status:"ok",cafe:"—",wh:"8,200 lbs",tour:"—",samples:"—",min:"5,000 lbs"},
+      {name:"Cocoa butter",sku:"RM-CBU",status:"critical",cafe:"—",wh:"1,850 lbs",tour:"—",samples:"—",min:"2,000 lbs"},
+      {name:"Organic cane sugar",sku:"RM-SUG",status:"low",cafe:"—",wh:"3,100 lbs",tour:"—",samples:"—",min:"3,000 lbs"},
+    ]},
+  ]
+},
+
+sales:{
+  title:"Sales & Account Management",
+  desc:"All buyer relationships across wholesale, distributor, affiliate, Shopify, and café channels",
+  addBtn:"+ Add Account",
+  summary:[
+    {label:"Total accounts",val:"9",sub:"all channels"},
+    {label:"Active",val:"7",sub:"ordered recently",color:"var(--s-done)"},
+    {label:"At risk",val:"1",sub:"30+ days quiet",color:"var(--s-pending)"},
+    {label:"Churned",val:"1",sub:"needs re-engagement",color:"var(--s-blocked)"},
+    {label:"April revenue",val:"$38.4k",sub:"month to date"},
+  ],
+  columns:["Account","Channel","Last Order","Last Contact","LTV","Next Action","Status"],
+  groups:[
+    {name:"Wholesale / Retail",color:"#5a9a3a",items:[
+      {name:"Caputo's Fine Foods",sub:"Sarah Kim · Salt Lake City",channel:"Wholesale",lastOrder:"Apr 5",lastContact:"Apr 8",ltv:"$28,400",action:"Send mini bar samples",status:"active"},
+      {name:"Whole Foods — Rocky Mtn",sub:"Marcus Webb · Denver",channel:"Wholesale",lastOrder:"Mar 28",lastContact:"Apr 1",ltv:"$94,500",action:"Q2 promo approval follow-up",status:"active"},
+      {name:"Foxtail Coffee Co.",sub:"Jennifer Park · Orlando",channel:"Wholesale",lastOrder:"Apr 2",lastContact:"Apr 3",ltv:"$12,600",action:"Upsell Fleur de Sel minis",status:"active"},
+      {name:"Zingerman's Deli",sub:"Tom Nguyen · Ann Arbor",channel:"Wholesale",lastOrder:"Feb 14",lastContact:"Feb 14",ltv:"$19,800",action:"⚠ Call this week — 58 days quiet",status:"risk"},
+      {name:"Le Marché Gourmet",sub:"Claire Fontaine · Chicago",channel:"Wholesale",lastOrder:"Jan 8",lastContact:"Jan 8",ltv:"$7,200",action:"Re-engagement offer",status:"churned"},
+    ]},
+    {name:"Distributor",color:"#3a8bd4",items:[
+      {name:"Mountain West Specialty Foods",sub:"orders@mwsf.com",channel:"Distributor",lastOrder:"Apr 9",lastContact:"Apr 9",ltv:"$142,000",action:"April order processing",status:"active"},
+    ]},
+    {name:"Affiliate & Online",color:"#a25ddc",items:[
+      {name:"Alex Torres — Specialty Rep",sub:"12% commission",channel:"Affiliate",lastOrder:"Mar 15",lastContact:"Apr 4",ltv:"$8,200",action:"Send sample kit for 3 Bay Area accounts",status:"active"},
+      {name:"Shopify — Online Store",sub:"ritualchocolate.com",channel:"Shopify",lastOrder:"Today",lastContact:"Today",ltv:"$186,000",action:"Shipping rate conversion check",status:"active"},
+      {name:"Ritual Café — Park City",sub:"Daily POS sales",channel:"Café",lastOrder:"Today",lastContact:"Today",ltv:"$58,000",action:"Bourbon Barrel restock needed",status:"active"},
+    ]},
+  ]
+},
+
+equipment:{
+  title:"Equipment & Maintenance",
+  desc:"All production equipment — status, service dates, and maintenance schedule",
+  addBtn:"+ Add Equipment",
+  summary:[
+    {label:"Total equipment",val:"8",sub:"pieces tracked"},
+    {label:"Operational",val:"6",sub:"running normally",color:"var(--s-done)"},
+    {label:"Service due",val:"1",sub:"Melangeur #2",color:"var(--s-pending)"},
+    {label:"Alert",val:"1",sub:"Cooling tunnel",color:"var(--s-blocked)"},
+    {label:"Next service",val:"Apr 15",sub:"Melangeur #2",color:""},
+  ],
+  columns:["Equipment","ID","Status","Last Service","Next Service","Hours / Max","Notes"],
+  groups:[
+    {name:"Production Equipment",color:"#c9833a",items:[
+      {name:"Roaster",id:"RST-01",status:"ok",last:"Feb 14",next:"May 14",hours:"342 / 500",note:"All sensors calibrated"},
+      {name:"Melangeur #1",id:"MLG-01",status:"ok",last:"Mar 2",next:"Jun 2",hours:"218 / 400",note:"Running — Batch A"},
+      {name:"Melangeur #2",id:"MLG-02",status:"blocked",last:"Jan 20",next:"Apr 15 ⚠",hours:"388 / 400",note:"Service overdue — offline"},
+      {name:"Conche",id:"CNH-01",status:"ok",last:"Mar 15",next:"Jun 15",hours:"290 / 500",note:"Running — Batch A"},
+      {name:"Tempering Machine",id:"TMP-01",status:"ok",last:"Mar 28",next:"Jun 28",hours:"155 / 400",note:"Batch A in progress"},
+      {name:"Cooling Tunnel",id:"CLT-01",status:"blocked",last:"Dec 10",next:"OVERDUE",hours:"520 / 500",note:"Compressor needs inspection"},
+      {name:"Cracker / Winnower",id:"CRK-01",status:"ok",last:"Mar 5",next:"Jun 5",hours:"96 / 300",note:""},
+      {name:"Moisture Analyzer",id:"MST-01",status:"ok",last:"Apr 1",next:"Jul 1",hours:"44 / 200",note:"Calibrated last week"},
+    ]},
+  ]
+},
+
+team:{
+  title:"Team & Roles",
+  desc:"Role-specific responsibilities, recurring tasks, and shift assignments",
+  addBtn:"+ Add Task",
+  summary:[
+    {label:"Team members",val:"6",sub:"active roles"},
+    {label:"Tasks today",val:"14",sub:"across all roles"},
+    {label:"Completed",val:"8",sub:"done today",color:"var(--s-done)"},
+    {label:"In progress",val:"4",sub:"active now",color:"var(--s-active)"},
+    {label:"Pending",val:"2",sub:"not started",color:""},
+  ],
+  columns:["Responsibility","Assigned To","Frequency","Status","Due","Board Link"],
+  groups:[
+    {name:"Chocolatier — Marcus R. / Priya M.",color:"#c9833a",items:[
+      {name:"Batch stage check-in — all active batches",owner:{init:"MR",color:"#8b4513"},freq:"Daily",status:"done",due:"Today",link:"Production Tracker"},
+      {name:"Roast profile documentation",owner:{init:"MR",color:"#8b4513"},freq:"Per batch",status:"done",due:"Apr 15",link:"Production Tracker"},
+      {name:"Grind particle size check (hr 12 + hr 20)",owner:{init:"PM",color:"#a0522d"},freq:"Per batch",status:"active",due:"Today",link:"Production Tracker"},
+      {name:"Conche sensory evaluation log",owner:{init:"MR",color:"#8b4513"},freq:"Every 4 hrs",status:"active",due:"Today",link:"Production Tracker"},
+    ]},
+    {name:"QC Specialist — Sofia L.",color:"#3a8bd4",items:[
+      {name:"QC hold evaluation — Batch A",owner:{init:"SL",color:"#3a8bd4"},freq:"Per batch",status:"ns",due:"Apr 17",link:"Production Tracker"},
+      {name:"Moisture content check",owner:{init:"SL",color:"#3a8bd4"},freq:"Per batch",status:"ns",due:"Apr 17",link:"Production Tracker"},
+      {name:"Bloom test sign-off",owner:{init:"SL",color:"#3a8bd4"},freq:"Per batch",status:"ns",due:"Apr 16",link:"Production Tracker"},
+    ]},
+    {name:"Packaging Lead — James T.",color:"#5a9a3a",items:[
+      {name:"Wrapping throughput — Batch A",owner:{init:"JT",color:"#5a9a3a"},freq:"Per batch",status:"ns",due:"Apr 17",link:"Production Tracker"},
+      {name:"Label accuracy spot-check",owner:{init:"JT",color:"#5a9a3a"},freq:"Per batch",status:"ns",due:"Apr 17",link:"Production Tracker"},
+      {name:"Case pack count reconciliation",owner:{init:"JT",color:"#5a9a3a"},freq:"Per batch",status:"ns",due:"Apr 17",link:"Production Tracker"},
+    ]},
+    {name:"Warehouse — Alex W.",color:"#7a6a5a",items:[
+      {name:"Finished goods inventory update",owner:{init:"AW",color:"#7a6a5a"},freq:"Daily",status:"active",due:"Today",link:"Inventory & Stock"},
+      {name:"Raw material level check",owner:{init:"AW",color:"#7a6a5a"},freq:"Weekly",status:"done",due:"Apr 14",link:"Inventory & Stock"},
+      {name:"Cocoa butter reorder — URGENT",owner:{init:"AW",color:"#7a6a5a"},freq:"As needed",status:"active",due:"Today",link:"Inventory & Stock"},
+    ]},
+  ]
+},
+
+kpi:{
+  title:"Weekly KPI Scorecard",
+  desc:"Leadership review every Monday — KPIs mapped to operational objectives",
+  addBtn:"+ Add KPI",
+  summary:[
+    {label:"KPIs tracked",val:"12",sub:"weekly review"},
+    {label:"On target",val:"3",sub:"green",color:"var(--s-done)"},
+    {label:"Near target",val:"7",sub:"amber",color:"var(--s-pending)"},
+    {label:"Off target",val:"2",sub:"red — action needed",color:"var(--s-blocked)"},
+    {label:"Last updated",val:"Apr 14",sub:"Monday review"},
+  ],
+  columns:["KPI","Owner","Target","This Week","vs Target","Status"],
+  groups:[
+    {name:"Phase 1 — Operational Stability",color:"#0073ea",items:[
+      {name:"Monthly revenue",sub:"April MTD",owner:{init:"DK",color:"#c9933a"},target:"$60,000",actual:"$38,420",vs:"–35% gap",status:"pending"},
+      {name:"Production output (lbs)",sub:"Monthly target",owner:{init:"MR",color:"#8b4513"},target:"10,000 lbs",actual:"~8,500 pace",vs:"–15%",status:"pending"},
+      {name:"Batch yield rate",sub:"% of theoretical",owner:{init:"MR",color:"#8b4513"},target:"97%",actual:"96.2%",vs:"–0.8pts",status:"review"},
+      {name:"Labor hours per batch",sub:"Efficiency",owner:{init:"MR",color:"#8b4513"},target:"136 hrs",actual:"148 hrs",vs:"+12 hrs",status:"pending"},
+      {name:"Inventory stockouts",sub:"Zero target",owner:{init:"AW",color:"#7a6a5a"},target:"0",actual:"1 (cocoa butter)",vs:"1 alert",status:"blocked"},
+      {name:"Batch scheduling adherence",sub:"Rolling 6-week plan",owner:{init:"DK",color:"#c9933a"},target:"100%",actual:"On track",vs:"✓",status:"done"},
+    ]},
+    {name:"Phase 2 — Margin & Financials",color:"#a25ddc",items:[
+      {name:"Gross margin %",sub:"Portfolio avg",owner:{init:"DK",color:"#c9933a"},target:"55%",actual:"52%",vs:"–3pts",status:"review"},
+      {name:"Cost per pound",sub:"Fully burdened",owner:{init:"DK",color:"#c9933a"},target:"$3.75",actual:"$3.94",vs:"+$0.19",status:"pending"},
+      {name:"On-time fulfillment",sub:"Order delivery",owner:{init:"AW",color:"#7a6a5a"},target:"98%",actual:"94%",vs:"–4pts",status:"review"},
+    ]},
+    {name:"Phase 3 — Growth & Scale",color:"#00c875",items:[
+      {name:"New wholesale accounts",sub:"Monthly adds",owner:{init:"DK",color:"#c9933a"},target:"2 / month",actual:"3 (Apr)",vs:"+1",status:"done"},
+      {name:"Days since last order avg",sub:"Account health",owner:{init:"DK",color:"#c9933a"},target:"<30 days",actual:"22 days",vs:"On target",status:"done"},
+      {name:"Founder operational involvement",sub:"Reducing over time",owner:{init:"DK",color:"#c9933a"},target:"Decreasing",actual:"Still high",vs:"Phase 3 target",status:"pending"},
+    ]},
+  ]
+},
+
+};
+
+// ══════════════════════
+// RENDER ENGINE
+// ══════════════════════
+let currentBoard='production';
+
+function showBoard(id){
+  currentBoard=id;
+  document.querySelectorAll('.sb-item').forEach(el=>el.classList.remove('active'));
+  const nav=document.getElementById('nav-'+id);
+  if(nav) nav.classList.add('active');
+
+  const special=['automations','setup'];
+  if(special.includes(id)){
+    document.getElementById('topBreadcrumb').textContent=id==='automations'?'Automations':'Setup Guide';
+    document.getElementById('summaryStrip').innerHTML='';
+    document.getElementById('boardTabs').style.display='none';
+    if(id==='automations') renderAutomations();
+    else renderSetup();
+    return;
+  }
+
+  document.getElementById('boardTabs').style.display='';
+  const b=BOARDS[id];
+  if(!b) return;
+  document.getElementById('topBreadcrumb').textContent=b.title;
+  document.getElementById('topAddBtn').textContent=b.addBtn;
+  renderSummary(b);
+  renderBoard(b);
+}
+
+function renderSummary(b){
+  document.getElementById('summaryStrip').innerHTML=b.summary.map(s=>`
+    <div class="sum-item">
+      <div class="sum-label">${s.label}</div>
+      <div class="sum-val" style="${s.color?'color:'+s.color:''}">${s.val}</div>
+      <div class="sum-sub" style="${s.color?'color:'+s.color:''}">${s.sub}</div>
+    </div>`).join('');
+}
+
+function statusCell(st){
+  const map={done:['s-done-cell','Done'],active:['s-active-cell','In Progress'],blocked:['s-blocked-cell','Blocked / Alert'],pending:['s-pending-cell','Low / Pending'],review:['s-review-cell','Near Target'],ns:['s-ns-cell','Not Started'],ok:['s-ok-cell','In Stock'],low:['s-low-cell','Low'],critical:['s-critical-cell','Critical'],risk:['s-pending-cell','At Risk'],churned:['s-blocked-cell','Churned']};
+  const [cls,label]=map[st]||['s-ns-cell',st];
+  return`<div class="status-cell ${cls}">${label}</div>`;
+}
+
+function personCell(p){
+  return`<div class="person-cell"><div class="person-avatar" style="background:${p.color}">${p.init}</div></div>`;
+}
+
+function renderBoard(b){
+  const isProduction=currentBoard==='production';
+  const isInventory=currentBoard==='inventory';
+  const isSales=currentBoard==='sales';
+  const isEquipment=currentBoard==='equipment';
+  const isTeam=currentBoard==='team';
+  const isKpi=currentBoard==='kpi';
+
+  let html=`<div class="board-view">`;
+
+  // column headers
+  html+=`<div class="col-headers"><div class="col-check"></div>`;
+  if(isProduction) html+=`<div class="col-name">Stage</div><div class="col-field">Owner</div><div class="col-field">Status</div><div class="col-field">Start</div><div class="col-field">Est. Done</div><div class="col-field">Yield %</div><div class="col-field wide">Notes</div>`;
+  else if(isInventory) html+=`<div class="col-name">Product</div><div class="col-field">Status</div><div class="col-field">Café</div><div class="col-field">Warehouse</div><div class="col-field">Tour</div><div class="col-field">Samples</div><div class="col-field">Min Stock</div>`;
+  else if(isSales) html+=`<div class="col-name">Account</div><div class="col-field">Channel</div><div class="col-field">Last Order</div><div class="col-field">Last Contact</div><div class="col-field">LTV</div><div class="col-field wide">Next Action</div><div class="col-field">Status</div>`;
+  else if(isEquipment) html+=`<div class="col-name">Equipment</div><div class="col-field">ID</div><div class="col-field">Status</div><div class="col-field">Last Service</div><div class="col-field">Next Service</div><div class="col-field">Hours</div><div class="col-field wide">Notes</div>`;
+  else if(isTeam) html+=`<div class="col-name">Responsibility</div><div class="col-field">Assigned</div><div class="col-field">Frequency</div><div class="col-field">Status</div><div class="col-field">Due</div><div class="col-field wide">Board Link</div>`;
+  else if(isKpi) html+=`<div class="col-name">KPI</div><div class="col-field">Owner</div><div class="col-field">Target</div><div class="col-field">This Week</div><div class="col-field">vs Target</div><div class="col-field">Status</div>`;
+  html+=`<div class="col-add">+</div></div>`;
+
+  b.groups.forEach(g=>{
+    html+=`<div class="group-block">
+      <div class="group-header">
+        <div class="group-color" style="background:${g.color}"></div>
+        <div class="group-name">${g.name}</div>
+        <div class="group-count">${g.items.length} items</div>
+        <div class="group-add">+ Add item</div>
+      </div>`;
+
+    g.items.forEach(item=>{
+      html+=`<div class="item-row">
+        <div class="item-check"><div class="check-box${item.status==='done'?' done':''}"></div></div>`;
+
+      if(isProduction){
+        html+=`<div class="item-field" style="flex:2;min-width:200px;justify-content:flex-start"><span>${item.name}</span></div>
+          <div class="item-field">${personCell(item.owner)}</div>
+          <div class="item-field">${statusCell(item.status)}</div>
+          <div class="item-field"><span class="date-cell">${item.start}</span></div>
+          <div class="item-field"><span class="date-cell">${item.end}</span></div>
+          <div class="item-field"><span class="num-cell${item.yield!=='—'?' good':''}">${item.yield}</span></div>
+          <div class="item-field wide"><span style="font-size:11px;color:var(--mon-text3)">${item.note}</span></div>`;
+      } else if(isInventory){
+        const sc=item.status==='ok'?'s-ok-cell':item.status==='low'?'s-low-cell':'s-critical-cell';
+        html+=`<div class="item-field" style="flex:2;min-width:200px;justify-content:flex-start">
+            <div><div style="font-size:13px;color:var(--mon-text)">${item.name}</div><div style="font-size:10px;color:var(--mon-text3);font-family:'DM Mono',monospace">${item.sku}</div></div>
+          </div>
+          <div class="item-field"><div class="status-cell ${sc}">${item.status==='ok'?'In Stock':item.status==='low'?'Low':'Critical'}</div></div>
+          <div class="item-field"><span class="num-cell">${item.cafe}</span></div>
+          <div class="item-field"><span class="num-cell">${item.wh}</span></div>
+          <div class="item-field"><span class="num-cell">${item.tour}</span></div>
+          <div class="item-field"><span class="num-cell">${item.samples}</span></div>
+          <div class="item-field"><span class="num-cell">${item.min}</span></div>`;
+      } else if(isSales){
+        const sc=item.status==='active'?'s-done-cell':item.status==='risk'?'s-pending-cell':'s-blocked-cell';
+        const sl=item.status==='active'?'Active':item.status==='risk'?'At Risk':'Churned';
+        html+=`<div class="item-field" style="flex:2;min-width:200px;justify-content:flex-start">
+            <div><div style="font-size:13px;color:var(--mon-text)">${item.name}</div><div style="font-size:10px;color:var(--mon-text3)">${item.sub}</div></div>
+          </div>
+          <div class="item-field"><div class="tag" style="background:rgba(0,115,234,.15);color:var(--mon-blue);font-size:10px">${item.channel}</div></div>
+          <div class="item-field"><span class="date-cell">${item.lastOrder}</span></div>
+          <div class="item-field"><span class="date-cell${item.lastContact==='Feb 14'||item.lastContact==='Jan 8'?' overdue':''}">${item.lastContact}</span></div>
+          <div class="item-field"><span class="num-cell">${item.ltv}</span></div>
+          <div class="item-field wide"><span style="font-size:11px;color:var(--mon-text3)">${item.action}</span></div>
+          <div class="item-field"><div class="status-cell ${sc}">${sl}</div></div>`;
+      } else if(isEquipment){
+        const sc=item.status==='ok'?'s-done-cell':'s-blocked-cell';
+        const sl=item.status==='ok'?'Operational':'Alert / Service';
+        html+=`<div class="item-field" style="flex:2;min-width:180px;justify-content:flex-start"><span>${item.name}</span></div>
+          <div class="item-field"><span style="font-size:11px;color:var(--mon-text3);font-family:'DM Mono',monospace">${item.id}</span></div>
+          <div class="item-field"><div class="status-cell ${sc}">${sl}</div></div>
+          <div class="item-field"><span class="date-cell">${item.last}</span></div>
+          <div class="item-field"><span class="date-cell${item.next.includes('⚠')||item.next==='OVERDUE'?' overdue':''}">${item.next}</span></div>
+          <div class="item-field"><span class="num-cell${item.hours.includes('388')||item.hours.includes('520')?' bad':''}">${item.hours}</span></div>
+          <div class="item-field wide"><span style="font-size:11px;color:var(--mon-text3)">${item.note}</span></div>`;
+      } else if(isTeam){
+        html+=`<div class="item-field" style="flex:2;min-width:200px;justify-content:flex-start"><span>${item.name}</span></div>
+          <div class="item-field">${personCell(item.owner)}</div>
+          <div class="item-field"><span style="font-size:11px;color:var(--mon-text2)">${item.freq}</span></div>
+          <div class="item-field">${statusCell(item.status)}</div>
+          <div class="item-field"><span class="date-cell">${item.due}</span></div>
+          <div class="item-field wide"><div class="tag" style="background:rgba(0,115,234,.1);color:var(--mon-blue);font-size:10px">${item.link}</div></div>`;
+      } else if(isKpi){
+        const vscls=item.status==='done'?'good':item.status==='blocked'?'bad':item.status==='review'?'':'warn';
+        html+=`<div class="item-field" style="flex:2;min-width:200px;justify-content:flex-start">
+            <div><div style="font-size:13px;color:var(--mon-text)">${item.name}</div><div style="font-size:10px;color:var(--mon-text3)">${item.sub}</div></div>
+          </div>
+          <div class="item-field">${personCell(item.owner)}</div>
+          <div class="item-field"><span class="num-cell">${item.target}</span></div>
+          <div class="item-field"><span class="num-cell ${vscls}">${item.actual}</span></div>
+          <div class="item-field"><span class="num-cell ${vscls}">${item.vs}</span></div>
+          <div class="item-field">${statusCell(item.status)}</div>`;
+      }
+
+      html+=`</div>`;
+    });
+
+    html+=`<div class="add-item-row"><div class="add-item-icon">+</div><div class="add-item-text">Add item</div></div></div>`;
+  });
+
+  html+=`</div>`;
+  document.getElementById('mainContent').innerHTML=html;
+}
+
+function renderAutomations(){
+  const autos=[
+    {icon:"📦",title:"Low stock alert → Notify warehouse",desc:"When inventory drops below minimum stock threshold, notify Warehouse Lead and create reorder task automatically.",trigger:"When [Stock Level] < [Min Stock] → Notify {Alex W.} and Create item in Inventory board",enabled:true,board:"Inventory & Stock"},
+    {icon:"⚠️",title:"Account aging flag → At Risk status",desc:"When a wholesale account's Last Order Date exceeds 30 days, automatically change their status to 'At Risk' and notify the sales lead.",trigger:"When [Last Order Date] > 30 days → Change Status to 'At Risk' and Notify {Dana K.}",enabled:true,board:"Sales & Accounts"},
+    {icon:"🔧",title:"Equipment service due → Create maintenance task",desc:"14 days before scheduled service date, automatically create a maintenance task and assign to the appropriate technician.",trigger:"When [Next Service Date] is in 14 days → Create item in Equipment board and Assign to {Tech}",enabled:true,board:"Equipment & Maintenance"},
+    {icon:"⚙️",title:"Stage complete → Unlock next stage",desc:"When a production stage status is set to 'Done', the next stage in the batch automatically becomes available and notifies the responsible team member.",trigger:"When [Status] changes to 'Done' → Change next item Status to 'In Progress' and Notify {owner}",enabled:true,board:"Production Tracker"},
+    {icon:"📊",title:"Monday KPI reminder → Leadership review",desc:"Every Monday at 8:00 AM, send a reminder to Anna and Jimmy to review and update the weekly KPI scorecard before the leadership meeting.",trigger:"Every Monday at 8:00 AM → Notify {Anna & Jimmy} 'Time to update KPI scorecard'",enabled:true,board:"KPI Scorecard"},
+    {icon:"🍫",title:"Batch complete → Inventory update",desc:"When all 12 stages of a batch are marked Done, automatically create inventory receiving items for the expected finished goods quantity.",trigger:"When all items in group are 'Done' → Create items in Inventory board with batch quantity",enabled:true,board:"Production Tracker"},
+    {icon:"📧",title:"At Risk account → Follow-up task",desc:"When an account status changes to 'At Risk', automatically create a follow-up task due within 3 days and assign to the sales lead.",trigger:"When [Status] changes to 'At Risk' → Create item 'Follow up with {account}' due in 3 days",enabled:true,board:"Sales & Accounts"},
+    {icon:"🔴",title:"Critical stock → Urgent reorder notification",desc:"When a raw material reaches 'Critical' status (below 50% of minimum), immediately send an urgent notification to the production manager.",trigger:"When [Status] = 'Critical' → Notify {Dana K.} with high priority 'Urgent reorder needed: {item}'",enabled:true,board:"Inventory & Stock"},
+  ];
+  document.getElementById('mainContent').innerHTML=`<div class="automation-view">
+    <div class="auto-intro">
+      <div class="auto-intro-title">⚡ Ritual Chocolate — Board Automations</div>
+      <div class="auto-intro-sub">These automations eliminate manual follow-up and ensure nothing falls through the cracks. Once configured, the system notifies the right person at the right time — automatically. All 8 automations below are pre-built for your workspace setup.</div>
+    </div>
+    <div class="auto-grid">${autos.map(a=>`
+      <div class="auto-card enabled">
+        <div class="auto-icon" style="background:rgba(0,115,234,.12)">${a.icon}</div>
+        <div class="auto-body">
+          <div class="auto-title">${a.title}</div>
+          <div class="auto-desc">${a.desc}</div>
+          <div class="auto-trigger"><strong>Trigger:</strong> ${a.trigger}</div>
+          <div style="margin-top:6px;font-size:10px;color:var(--mon-text3);font-family:'DM Mono',monospace">Board: ${a.board}</div>
+          <div class="auto-status"><div class="auto-dot on"></div><div class="auto-label">Active</div></div>
+        </div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function renderSetup(){
+  document.getElementById('mainContent').innerHTML=`<div class="setup-view">
+    <div class="setup-header">
+      <div class="setup-title">🚀 Ritual Chocolate — Monday.com Setup Guide</div>
+      <div class="setup-sub">This workspace is fully pre-designed. Follow this 3-phase setup to go from zero to operational in under 2 weeks. Estimated time: 8–10 hours total configuration + team onboarding.</div>
+    </div>
+
+    <div class="phase-block">
+      <div class="phase-label"><span>Week 1 — Core Boards</span><div class="phase-line"></div><span style="color:var(--mon-blue)">Days 1–5</span></div>
+      <div class="setup-steps">
+        <div class="setup-step">
+          <div class="step-num">Day 1 · 1–2 hrs</div>
+          <div class="step-title">Create workspace & invite team</div>
+          <div class="step-items">
+            <div class="step-item"><div class="step-dot"></div>Create "Ritual Chocolate OS" workspace</div>
+            <div class="step-item"><div class="step-dot"></div>Invite all 6 team members</div>
+            <div class="step-item"><div class="step-dot"></div>Assign roles (Admin: Anna, Jimmy, Ryan)</div>
+            <div class="step-item"><div class="step-dot"></div>Set up Pro plan features</div>
+          </div>
+          <div class="step-time">~1 hour</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+        </div>
+        <div class="setup-step">
+          <div class="step-num">Day 2 · 2 hrs</div>
+          <div class="step-title">Build Production Tracker board</div>
+          <div class="step-items">
+            <div class="step-item"><div class="step-dot"></div>Create 4 groups (Batch A–D)</div>
+            <div class="step-item"><div class="step-dot"></div>Add all 12 stage items per batch</div>
+            <div class="step-item"><div class="step-dot"></div>Configure status, owner, date columns</div>
+            <div class="step-item"><div class="step-dot"></div>Set up stage dependency automations</div>
+            <div class="step-item"><div class="step-dot"></div>Add yield % and notes columns</div>
+          </div>
+          <div class="step-time">~2 hours</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+        </div>
+        <div class="setup-step">
+          <div class="step-num">Day 3 · 2 hrs</div>
+          <div class="step-title">Build Inventory & Sales boards</div>
+          <div class="step-items">
+            <div class="step-item"><div class="step-dot"></div>Create Inventory board — 24 SKUs + raw materials</div>
+            <div class="step-item"><div class="step-dot"></div>Add 5 location columns per SKU</div>
+            <div class="step-item"><div class="step-dot"></div>Set minimum stock thresholds</div>
+            <div class="step-item"><div class="step-dot"></div>Create Sales CRM board — all accounts</div>
+            <div class="step-item"><div class="step-dot"></div>Configure channel groups and status</div>
+          </div>
+          <div class="step-time">~2 hours</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-block">
+      <div class="phase-label"><span>Week 2 — Automations & Training</span><div class="phase-line"></div><span style="color:var(--mon-blue)">Days 6–10</span></div>
+      <div class="setup-steps">
+        <div class="setup-step">
+          <div class="step-num">Day 6 · 1 hr</div>
+          <div class="step-title">Build Equipment & Team boards</div>
+          <div class="step-items">
+            <div class="step-item"><div class="step-dot"></div>Create Equipment board — 8 items</div>
+            <div class="step-item"><div class="step-dot"></div>Add service date and hours columns</div>
+            <div class="step-item"><div class="step-dot"></div>Create Team & Roles board</div>
+            <div class="step-item"><div class="step-dot"></div>Add recurring task assignments</div>
+          </div>
+          <div class="step-time">~1 hour</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+        </div>
+        <div class="setup-step">
+          <div class="step-num">Day 7 · 1 hr</div>
+          <div class="step-title">Configure all 8 automations</div>
+          <div class="step-items">
+            <div class="step-item"><div class="step-dot"></div>Low stock → notify warehouse</div>
+            <div class="step-item"><div class="step-dot"></div>Account aging → At Risk flag</div>
+            <div class="step-item"><div class="step-dot"></div>Service due → maintenance task</div>
+            <div class="step-item"><div class="step-dot"></div>Stage complete → unlock next stage</div>
+            <div class="step-item"><div class="step-dot"></div>Monday KPI reminder automation</div>
+          </div>
+          <div class="step-time">~1 hour</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+        </div>
+        <div class="setup-step">
+          <div class="step-num">Days 8–10 · 2 hrs</div>
+          <div class="step-title">Team training & go-live</div>
+          <div class="step-items">
+            <div class="step-item"><div class="step-dot"></div>30-min session per role group</div>
+            <div class="step-item"><div class="step-dot"></div>Walk through "My Work" view per person</div>
+            <div class="step-item"><div class="step-dot"></div>Set up mobile apps for team</div>
+            <div class="step-item"><div class="step-dot"></div>First Monday KPI review meeting</div>
+            <div class="step-item"><div class="step-dot"></div>Go live — retire spreadsheets</div>
+          </div>
+          <div class="step-time">~2 hours</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:rgba(0,115,234,.08);border:1px solid rgba(0,115,234,.2);border-radius:10px;padding:16px 20px;margin-top:8px">
+      <div style="font-size:13px;font-weight:600;color:var(--mon-blue);margin-bottom:5px">Total estimated setup time: 8–10 hours · Live in under 2 weeks</div>
+      <div style="font-size:12px;color:var(--mon-text3);line-height:1.6">Monday.com Pro runs approximately $16–20/user/month billed annually. For a team of 6–8, expect $96–160/month. All 6 boards, 8 automations, and the full workspace structure shown here are included in this proposal and ready to configure from Day 1.</div>
+    </div>
+  </div>`;
+}
+
+// INIT
+showBoard('production');
+</script>
+</body>
+</html>
